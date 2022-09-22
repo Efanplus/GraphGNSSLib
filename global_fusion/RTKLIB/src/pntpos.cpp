@@ -654,6 +654,7 @@ extern int pntpos(const obsd_t *obs, int n, const nav_t *nav,
     
     /* estimate receiver position with pseudorange by RTKLIB */
     stat=estpos(obs,n,rs,dts,var,svh,nav,&opt_,sol,azel_,vsat,resp,msg);
+    LOG(INFO) << " estpos result:" << sol->rr[0] << " " << sol->rr[1] << " " << sol->rr[2];
 
     /* estimate receiver position with pseudorange by WLS and Eigen */
     bool haveOneBeiDou = false;

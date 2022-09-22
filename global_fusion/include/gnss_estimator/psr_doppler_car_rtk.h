@@ -492,7 +492,7 @@ public:
                         ceres::CostFunction* dd_cp_function = new ceres::AutoDiffCostFunction<DDCarrierPhaseFactor_DDBias, 1 
                                                         , state_size,ar_size>(new 
                                                         DDCarrierPhaseFactor_DDBias(DD_measurement, base_pose,carrier_phase_index));
-                        auto IDs = problem.AddResidualBlock(dd_cp_function, loss_function, state_array[k],ar_state_array[k]); 
+                        auto IDs = problem.AddResidualBlock(dd_cp_function, loss_function, state_array[k], ar_state_array[k]); 
 
                         carrier_phase_index++;
                         // LOG(INFO)<<"add double-difference carrier phase factor->"<<carrier_phase_index;

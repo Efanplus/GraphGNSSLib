@@ -28,18 +28,19 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   nlosExclusion
+  novatel_msgs
 )
 
 find_package(Ceres REQUIRED)
 
-add_subdirectory(./ThirdParty/GeographicLib/)
+# add_subdirectory(./ThirdParty/GeographicLib/)
 add_subdirectory(./RTKLIB/)
 
 include_directories(
   ${catkin_INCLUDE_DIRS}
   ${CERES_INCLUDE_DIRS}
-  ./ThirdParty/GeographicLib/include/
-)
+  )
+#   ./ThirdParty/GeographicLib/include/
 
 
 catkin_package()
@@ -85,8 +86,8 @@ target_link_libraries(testRTKLIBNode ${catkin_LIBRARIES} ${CERES_LIBRARIES}
 						convkml convrnx datum download ephemeris geoid ionex lambda
 						options pntpos postpos ppp_ar ppp preceph qzslex rcvraw rinex
 						rtcm rtcm2 rtcm3 rtcm3e rtkcmn rtkpos rtksvr sbas solution
-						stream streamsvr tle
-						libGeographiccc) 
+						stream streamsvr tle)
+						# libGeographiccc) 
 
 
 
@@ -99,8 +100,8 @@ target_link_libraries(gnss_preprocessor_node ${catkin_LIBRARIES} ${CERES_LIBRARI
 						convkml convrnx datum download ephemeris geoid ionex lambda
 						options pntpos postpos ppp_ar ppp preceph qzslex rcvraw rinex
 						rtcm rtcm2 rtcm3 rtcm3e rtkcmn rtkpos rtksvr sbas solution
-						stream streamsvr tle
-						libGeographiccc) 
+						stream streamsvr tle)
+						# libGeographiccc) 
 
 add_executable(rosbag_generator_node 
 	src/gnss_preprocessor/rosbag_generator.cpp
@@ -111,8 +112,8 @@ target_link_libraries(rosbag_generator_node ${catkin_LIBRARIES} ${CERES_LIBRARIE
 						convkml convrnx datum download ephemeris geoid ionex lambda
 						options pntpos postpos ppp_ar ppp preceph qzslex rcvraw rinex
 						rtcm rtcm2 rtcm3 rtcm3e rtkcmn rtkpos rtksvr sbas solution
-						stream streamsvr tle
-						libGeographiccc) 
+						stream streamsvr tle)
+						# libGeographiccc) 
 
 add_executable(psr_spp_node 
 	src/gnss_estimator/psr_spp.cpp)
@@ -120,8 +121,8 @@ target_link_libraries(psr_spp_node ${catkin_LIBRARIES} ${CERES_LIBRARIES}
 						convkml convrnx datum download ephemeris geoid ionex lambda
 						options pntpos postpos ppp_ar ppp preceph qzslex rcvraw rinex
 						rtcm rtcm2 rtcm3 rtcm3e rtkcmn rtkpos rtksvr sbas solution
-						stream streamsvr tle
-						libGeographiccc) 
+						stream streamsvr tle)
+						# libGeographiccc) 
 
 
 add_executable(psr_spp_dyna_auto_node 
@@ -130,8 +131,8 @@ target_link_libraries(psr_spp_dyna_auto_node ${catkin_LIBRARIES} ${CERES_LIBRARI
 						convkml convrnx datum download ephemeris geoid ionex lambda
 						options pntpos postpos ppp_ar ppp preceph qzslex rcvraw rinex
 						rtcm rtcm2 rtcm3 rtcm3e rtkcmn rtkpos rtksvr sbas solution
-						stream streamsvr tle
-						libGeographiccc) 
+						stream streamsvr tle)
+						# libGeographiccc) 
 
 
 add_executable(psr_doppler_fusion_node 
@@ -143,8 +144,8 @@ target_link_libraries(psr_doppler_fusion_node ${catkin_LIBRARIES} ${CERES_LIBRAR
 						convkml convrnx datum download ephemeris geoid ionex lambda
 						options pntpos postpos ppp_ar ppp preceph qzslex rcvraw rinex
 						rtcm rtcm2 rtcm3 rtcm3e rtkcmn rtkpos rtksvr sbas solution
-						stream streamsvr tle
-						libGeographiccc) 
+						stream streamsvr tle)
+						# libGeographiccc) 
 
 add_executable(psr_doppler_car_rtk_node 
 	src/gnss_estimator/psr_doppler_car_rtk.cpp
@@ -155,8 +156,8 @@ target_link_libraries(psr_doppler_car_rtk_node ${catkin_LIBRARIES} ${CERES_LIBRA
 						convkml convrnx datum download ephemeris geoid ionex lambda
 						options pntpos postpos ppp_ar ppp preceph qzslex rcvraw rinex
 						rtcm rtcm2 rtcm3 rtcm3e rtkcmn rtkpos rtksvr sbas solution
-						stream streamsvr tle
-						libGeographiccc) 
+						stream streamsvr tle)
+						# libGeographiccc) 
 
 add_executable(psr_doppler_car_rtk_dyna_node 
 	src/gnss_estimator/psr_doppler_car_rtk_dyna.cpp
@@ -167,8 +168,8 @@ target_link_libraries(psr_doppler_car_rtk_dyna_node ${catkin_LIBRARIES} ${CERES_
 						convkml convrnx datum download ephemeris geoid ionex lambda
 						options pntpos postpos ppp_ar ppp preceph qzslex rcvraw rinex
 						rtcm rtcm2 rtcm3 rtcm3e rtkcmn rtkpos rtksvr sbas solution
-						stream streamsvr tle
-						libGeographiccc) 
+						stream streamsvr tle)
+						# libGeographiccc) 
 
 add_executable(evaluate_gps_solution_node 
 	src/evo/evaluate_gps_solution.cpp
@@ -179,6 +180,6 @@ target_link_libraries(evaluate_gps_solution_node ${catkin_LIBRARIES} ${CERES_LIB
 						convkml convrnx datum download ephemeris geoid ionex lambda
 						options pntpos postpos ppp_ar ppp preceph qzslex rcvraw rinex
 						rtcm rtcm2 rtcm3 rtcm3e rtkcmn rtkpos rtksvr sbas solution
-						stream streamsvr tle
-						libGeographiccc) 
+						stream streamsvr tle)
+						# libGeographiccc) 
 

@@ -52,6 +52,9 @@
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>
   <build_depend>nlosExclusion</build_depend>
+  <build_depend>novatel_msgs</build_depend>
+  <build_depend>glog_catkin</build_depend>
+  <build_depend>gflags_catkin</build_depend>
 
   <build_depend>std_msgs</build_depend>
   <build_export_depend>roscpp</build_export_depend>
@@ -60,7 +63,10 @@
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
+  <exec_depend>novatel_msgs</exec_depend>
   <exec_depend>nlosExclusion</exec_depend>
+  <exec_depend>glog_catkin</exec_depend>
+  <exec_depend>gflags_catkin</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->

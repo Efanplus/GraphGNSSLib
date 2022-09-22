@@ -230,154 +230,154 @@ struct DDCarrierPhaseConstraint
 };
 
 /**
-	 * @brief find master satellites from user end gnss data,
-	 * @param satellite id, gnss data array (one epoch), gnss data (one satellite)
-	 * @return none
-	 */
-    bool findMasterSatellite(int sat_id, nlosExclusion::GNSS_Raw_Array user_gnss_data, nlosExclusion::GNSS_Raw& master_sv, nlosExclusion::GNSS_Raw& i_sv)
-    {   
-        /* get navigation satellite system */
-        int sys=satsys(sat_id,NULL);   
-        if(sys==SYS_GPS)
+ * @brief find master satellites from user end gnss data,
+ * @param satellite id, gnss data array (one epoch), gnss data (one satellite)
+ * @return none
+ */
+bool findMasterSatellite(int sat_id, nlosExclusion::GNSS_Raw_Array user_gnss_data, nlosExclusion::GNSS_Raw& master_sv, nlosExclusion::GNSS_Raw& i_sv)
+{   
+    /* get navigation satellite system */
+    int sys=satsys(sat_id,NULL);   
+    if(sys==SYS_GPS)
+    {
+        // LOG(INFO) << "GPS Satellite  ";
+    }
+    else if(sys==SYS_CMP)
+    {
+        // LOG(INFO) << "BeiDou Satellite   ";
+    }
+    else
+    {
+        LOG(INFO) << "Unknow!!!!! Satellite   ";
+    }
+    
+    int sv_cnt = user_gnss_data.GNSS_Raws.size(); 
+    int same_satsystem_cnt = 0;
+    double master_sv_id = -1;
+    double max_elevation = -1;
+    for(int i = 0; i < sv_cnt; i++)
+    {
+        if(sys == (satsys(user_gnss_data.GNSS_Raws[i].prn_satellites_index,NULL))) // same satellite system
         {
-            // LOG(INFO) << "GPS Satellite  ";
-        }
-        else if(sys==SYS_CMP)
-        {
-            // LOG(INFO) << "BeiDou Satellite   ";
-        }
-        else
-        {
-            LOG(INFO) << "Unknow!!!!! Satellite   ";
-        }
-        
-        int sv_cnt = user_gnss_data.GNSS_Raws.size(); 
-        int same_satsystem_cnt = 0;
-        double master_sv_id = -1;
-        double max_elevation = -1;
-        for(int i = 0; i < sv_cnt; i++)
-        {
-            if(sys == (satsys(user_gnss_data.GNSS_Raws[i].prn_satellites_index,NULL))) // same satellite system
+            same_satsystem_cnt++;
+            if(user_gnss_data.GNSS_Raws[i].elevation >= max_elevation)
             {
-                same_satsystem_cnt++;
-                if(user_gnss_data.GNSS_Raws[i].elevation >= max_elevation)
-                {
-                    max_elevation = user_gnss_data.GNSS_Raws[i].elevation;
-                    master_sv_id = i;
-                }
+                max_elevation = user_gnss_data.GNSS_Raws[i].elevation;
+                master_sv_id = i;
+            }
 
-                // same satellite system and same satellite id
-                if(sat_id ==int(user_gnss_data.GNSS_Raws[i].prn_satellites_index))
-                {
-                    i_sv = user_gnss_data.GNSS_Raws[i];
-                    i_sv.elevation = user_gnss_data.GNSS_Raws[i].elevation;
-                    // if(i_sv.elevation==0)
-                    // {
-                    //     LOG(INFO) << "satellite with zero elevation angle---";
-                    // }
-                }
+            // same satellite system and same satellite id
+            if(sat_id ==int(user_gnss_data.GNSS_Raws[i].prn_satellites_index))
+            {
+                i_sv = user_gnss_data.GNSS_Raws[i];
+                i_sv.elevation = user_gnss_data.GNSS_Raws[i].elevation;
+                // if(i_sv.elevation==0)
+                // {
+                //     LOG(INFO) << "satellite with zero elevation angle---";
+                // }
             }
         }
+    }
 
-        if(same_satsystem_cnt>=2) // at least 2 satellites with same sat system
+    if(same_satsystem_cnt>=2) // at least 2 satellites with same sat system
+    {
+        master_sv = user_gnss_data.GNSS_Raws[master_sv_id];
+        // LOG(INFO) << "elevation of master satellite " << max_elevation;
+        /*check if you have find the satellite with same ID in user end*/
+        if(sat_id==master_sv.prn_satellites_index || (i_sv.pseudorange<10)) // the sat_id is same as master satellite (double-difference should not be done between master and master)
         {
-            master_sv = user_gnss_data.GNSS_Raws[master_sv_id];
-            // LOG(INFO) << "elevation of master satellite " << max_elevation;
-            /*check if you have find the satellite with same ID in user end*/
-            if(sat_id==master_sv.prn_satellites_index || (i_sv.pseudorange<10)) // the sat_id is same as master satellite (double-difference should not be done between master and master)
-            {
-                // LOG(INFO) << "Warning!!! master satellite is itself!!!!!";
-                return false;
-            }
-            return true;
-        }
-        else 
+            // LOG(INFO) << "Warning!!! master satellite is itself!!!!!";
             return false;
-
-    }
-
-    /**
-	 * @brief find closest gnss measurement from user end gnss data
-	 * @param time, gnss map from user end, gnss data (one epoch)
-	 * @return none
-	*/
-    void findClosestEpoch(double t, std::map<double, nlosExclusion::GNSS_Raw_Array> gnss_raw_map, nlosExclusion::GNSS_Raw_Array& cloest_epoch_gnss)
-    {
-        std::map<double, nlosExclusion::GNSS_Raw_Array>::iterator gnss_iter;
-        gnss_iter = gnss_raw_map.begin();
-        int length = gnss_raw_map.size();
-        double time_diff = 100000;
-        for(int i = 0;  i < length; i++,gnss_iter++) // initialize
-        {
-            if((fabs(t - gnss_iter->first))<time_diff)
-            {
-                // with smallest time difference
-                time_diff = fabs(t - gnss_iter->first);
-                cloest_epoch_gnss = gnss_iter->second;
-            }
-            
-
         }
-        // LOG(INFO) << "time_diff " << time_diff;
+        return true;
     }
+    else 
+        return false;
 
-    /**
-	 * @brief find satellite with same id
-	 * @param id, gnss data in one epoch, one satellite
-	 * @return none
-	*/
-    void findSatellitewithSameId(double id, nlosExclusion::GNSS_Raw_Array gnss_data, nlosExclusion::GNSS_Raw& same_id_sv)
+}
+
+/**
+ * @brief find closest gnss measurement from user end gnss data
+ * @param time, gnss map from user end, gnss data (one epoch)
+ * @return none
+*/
+void findClosestEpoch(double t, std::map<double, nlosExclusion::GNSS_Raw_Array> gnss_raw_map, nlosExclusion::GNSS_Raw_Array& cloest_epoch_gnss)
+{
+    std::map<double, nlosExclusion::GNSS_Raw_Array>::iterator gnss_iter;
+    gnss_iter = gnss_raw_map.begin();
+    int length = gnss_raw_map.size();
+    double time_diff = 100000;
+    for(int i = 0;  i < length; i++,gnss_iter++) // initialize
     {
-        int length = gnss_data.GNSS_Raws.size();
-        for(int i = 0; i < length; i++)
+        if((fabs(t - gnss_iter->first))<time_diff)
         {
-            if(gnss_data.GNSS_Raws[i].prn_satellites_index == id)
-            {
-                same_id_sv = gnss_data.GNSS_Raws[i];
-            }
+            // with smallest time difference
+            time_diff = fabs(t - gnss_iter->first);
+            cloest_epoch_gnss = gnss_iter->second;
+        }
+        
+
+    }
+    // LOG(INFO) << "time_diff " << time_diff;
+}
+
+/**
+ * @brief find satellite with same id
+ * @param id, gnss data in one epoch, one satellite
+ * @return none
+*/
+void findSatellitewithSameId(double id, nlosExclusion::GNSS_Raw_Array gnss_data, nlosExclusion::GNSS_Raw& same_id_sv)
+{
+    int length = gnss_data.GNSS_Raws.size();
+    for(int i = 0; i < length; i++)
+    {
+        if(gnss_data.GNSS_Raws[i].prn_satellites_index == id)
+        {
+            same_id_sv = gnss_data.GNSS_Raws[i];
         }
     }
+}
 
-    /**
-	 * @brief check the wheather all the consided satellite have carrier-phase
-	 * @param gnss double-difference measurements
-	 * @return true or false
-	*/
-    bool checkCarrierPhaseConsistency(DDMeasurement DD_measurement)
-    {
-        /* the master satellite is found from user end*/
-        nlosExclusion::GNSS_Raw u_master_SV;
-        nlosExclusion::GNSS_Raw u_iSV;
+/**
+ * @brief check the wheather all the consided satellite have carrier-phase
+ * @param gnss double-difference measurements
+ * @return true or false
+*/
+bool checkCarrierPhaseConsistency(DDMeasurement DD_measurement)
+{
+    /* the master satellite is found from user end*/
+    nlosExclusion::GNSS_Raw u_master_SV;
+    nlosExclusion::GNSS_Raw u_iSV;
 
-        nlosExclusion::GNSS_Raw r_master_SV;
-        nlosExclusion::GNSS_Raw r_iSV;
-        if(DD_measurement.u_master_SV.carrier_phase<10) return false;
-        else if(DD_measurement.u_iSV.carrier_phase<10) return false;
-        else if(DD_measurement.r_master_SV.carrier_phase<10) return false;
-        else if(DD_measurement.r_iSV.carrier_phase<10) return false;
-        else return true;
-        
-    }
+    nlosExclusion::GNSS_Raw r_master_SV;
+    nlosExclusion::GNSS_Raw r_iSV;
+    if(DD_measurement.u_master_SV.carrier_phase<10) return false;
+    else if(DD_measurement.u_iSV.carrier_phase<10) return false;
+    else if(DD_measurement.r_master_SV.carrier_phase<10) return false;
+    else if(DD_measurement.r_iSV.carrier_phase<10) return false;
+    else return true;
+    
+}
 
-    /**
-	 * @brief check the wheather all the consided satellite have carrier-phase 
-     * or have cycle slip?
-	 * @param gnss double-difference measurements
-	 * @return true or false
-	*/
-    bool checkCarrierPhaseConsistencyCycleSlip(DDMeasurement DD_measurement)
-    {
-        /* the master satellite is found from user end*/
-        nlosExclusion::GNSS_Raw u_master_SV;
-        nlosExclusion::GNSS_Raw u_iSV;
+/**
+ * @brief check the wheather all the consided satellite have carrier-phase 
+ * or have cycle slip?
+ * @param gnss double-difference measurements
+ * @return true or false
+*/
+bool checkCarrierPhaseConsistencyCycleSlip(DDMeasurement DD_measurement)
+{
+    /* the master satellite is found from user end*/
+    nlosExclusion::GNSS_Raw u_master_SV;
+    nlosExclusion::GNSS_Raw u_iSV;
 
-        nlosExclusion::GNSS_Raw r_master_SV;
-        nlosExclusion::GNSS_Raw r_iSV;
-        if((DD_measurement.u_master_SV.carrier_phase<10) || (DD_measurement.u_master_SV.visable>0)) return false;
-        else if((DD_measurement.u_iSV.carrier_phase<10) || (DD_measurement.u_iSV.visable>0)) return false;
+    nlosExclusion::GNSS_Raw r_master_SV;
+    nlosExclusion::GNSS_Raw r_iSV;
+    if((DD_measurement.u_master_SV.carrier_phase<10) || (DD_measurement.u_master_SV.visable>0)) return false;
+    else if((DD_measurement.u_iSV.carrier_phase<10) || (DD_measurement.u_iSV.visable>0)) return false;
 
-        else if((DD_measurement.r_master_SV.carrier_phase<10)||(DD_measurement.r_master_SV.visable>0)) return false;
-        else if((DD_measurement.r_iSV.carrier_phase<10)||(DD_measurement.r_iSV.visable>0)) return false;
-        else return true;
-        
-    }
+    else if((DD_measurement.r_master_SV.carrier_phase<10)||(DD_measurement.r_master_SV.visable>0)) return false;
+    else if((DD_measurement.r_iSV.carrier_phase<10)||(DD_measurement.r_iSV.visable>0)) return false;
+    else return true;
+    
+}
