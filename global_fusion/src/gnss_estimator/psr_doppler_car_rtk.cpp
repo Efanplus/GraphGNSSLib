@@ -255,8 +255,10 @@ public:
    * @return void
    @ 
    */
-   void gnssraw_doppler_msg_callback(const nlosExclusion::GNSS_Raw_ArrayConstPtr& gnss_msg, const nlosExclusion::GNSS_Raw_ArrayConstPtr& station_gnss_msg, const nav_msgs::OdometryConstPtr& doppler_msg)
-    {
+   void gnssraw_doppler_msg_callback(
+        const nlosExclusion::GNSS_Raw_ArrayConstPtr& gnss_msg,
+        const nlosExclusion::GNSS_Raw_ArrayConstPtr& station_gnss_msg,
+        const nav_msgs::OdometryConstPtr& doppler_msg){
         m_gnss_raw_mux.lock();
         hasNewData = true;
         gnss_frame++;

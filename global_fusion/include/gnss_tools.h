@@ -1446,12 +1446,6 @@ Eigen::MatrixXd enu2ecef(Eigen::MatrixXd originllh, Eigen::MatrixXd enu) // tran
     double est_p_u2i = getDistanceFrom2Points(u_pose, u_pose_i);
     est_p_u2i = est_p_u2i + OMGE_ * (u_pose_i(0)*u_pose(1)-u_pose_i(1)*u_pose(0))/CLIGHT_;
 
-    // jacobian_matrix(jac_row, 0) = (u_pose_i(0) - u_pose(0))/(est_p_u2i) - (u_pose_m(0) - u_pose(0))/est_p_u2m;
-
-    // jacobian_matrix(jac_row, 1) = (u_pose_i(1) - u_pose(1))/(est_p_u2i) - (u_pose_m(1) - u_pose(1))/est_p_u2m;
-
-    // jacobian_matrix(jac_row, 2) = (u_pose_i(2) - u_pose(2))/(est_p_u2i) - (u_pose_m(2) - u_pose(2))/est_p_u2m;
-
     double factor = 1;
     jacobian_matrix(jac_row, 0) = factor * ((u_pose_i(0) - u_pose(0))/(est_p_u2i) - (u_pose_m(0) - u_pose(0))/est_p_u2m);
 
