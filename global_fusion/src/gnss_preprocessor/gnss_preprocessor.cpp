@@ -30,16 +30,14 @@ int main(int argc, char **argv)
 
 	/* get setup parameters */
 	int mode, nf, soltype;
-	std::string roverMeasureFile, baseMeasureFile, BeiDouEmpFile, GPSEmpFile;
+	std::string roverMeasureFile, baseMeasureFile, EmpFile;
 	std::string out_folder;
 	nh.param("mode",   mode, 2);
 	nh.param("nf",     nf, 2);
 	nh.param("soltype",soltype, 2);
 	ros::param::get("roverMeasureFile", roverMeasureFile);
 	ros::param::get("baseMeasureFile", baseMeasureFile);
-	ros::param::get("BeiDouEmpFile", BeiDouEmpFile);
-	ros::param::get("GPSEmpFile", GPSEmpFile);
-	ros::param::get("out_folder", out_folder);
+	ros::param::get("EmpFile", EmpFile);
 
 	/* flag for state */
     int n=0,i,stat;
@@ -93,8 +91,7 @@ int main(int argc, char **argv)
 
 	strcpy(infile[n++],strdup(roverMeasureFile.c_str()));
 	strcpy(infile[n++],strdup(baseMeasureFile.c_str()));
-	strcpy(infile[n++],strdup(BeiDouEmpFile.c_str()));
-	strcpy(infile[n++],strdup(GPSEmpFile.c_str()));
+	strcpy(infile[n++],strdup(EmpFile.c_str()));
 
 	/* if you use the RTK mode, specify the position of the station (only used by RTKLIB)
 	 * following is an example position of the base HKSC in Hong Kong */
