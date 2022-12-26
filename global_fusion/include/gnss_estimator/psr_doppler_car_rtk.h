@@ -710,6 +710,7 @@ public:
             // LOG(INFO) << "<<<<<Fixed!!!!!!!!!!!!!!!!!!!!!!!!!!>>>>>";
             fixed_cnt++;
         }
+        std::cout << "state's pos:" << state.transpose() << std::endl;
         fixedStateGNSSRTK = state;
 
         return true;
