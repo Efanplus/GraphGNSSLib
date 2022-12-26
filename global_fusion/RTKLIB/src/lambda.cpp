@@ -257,8 +257,7 @@ extern int lambda(int n, int m, const double *a, const double *Q, double *F,
     //     LOG(INFO)<< "Q[i]-> "<<Q[i];
     // }
 
-    LOG(INFO)<< "s[0]-> "<<s[0];
-    LOG(INFO)<< "s[1]-> "<<s[1];
+    LOG(INFO)<< "s[0]: "<< s[0] << " s[1]: "<< s[1];
 
     free(L); free(D); free(Z); free(z); free(E);
     return info;

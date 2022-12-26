@@ -1445,11 +1445,33 @@ static int resamb_LAMBDA(rtk_t *rtk, double *bias, double *xa)
         free(D);
         return 0;
     }
+    LOG(INFO) << "D_print: ";
+    Eigen::Map<Eigen::MatrixXd> D_print(D, nx, nx);
+    for (int pi = 0; pi < D_print.rows(); pi++) {
+        for (int pj = 0; pj < D_print.cols(); pj++) {
+            if(D_print(pi, pj) != 0) {
+                std::cout << "(" << pi << "," << pj << "," << D_print(pi, pj) << "," << *(rtk->x + pi) << ")";
+            }
+        }
+    }
+    std::cout << std::endl;
+    Eigen::Map<Eigen::MatrixXd> rtk_x_print(rtk->x, rtk->nx, 1);
+    LOG(INFO) << "rtk_x_print: ";
+    std::stringstream ss;
+    for (int pi = 0; pi < rtk->nx; pi ++) {
+        if (rtk_x_print(pi) != 0) {
+            std::cout << "(" << pi << ", " << rtk_x_print(pi) << ")";
+            ss << pi << ",";
+        }
+    }
+    std::cout << std::endl << "rtk_x_sat_id: " << ss.str() << std::endl;
     ny=na+nb; y=mat(ny,1); Qy=mat(ny,ny); DP=mat(ny,nx);
     b=mat(nb,2); db=mat(nb,1); Qb=mat(nb,nb); Qab=mat(na,nb); QQ=mat(na,nb);
     
     /* transform single to double-differenced phase-bias (y=D'*x, Qy=D'*P*D) */
     matmul("TN",ny, 1,nx,1.0,D ,rtk->x,0.0,y );
+    Eigen::Map<Eigen::MatrixXd> rtk_y_print(y, ny, 1);
+    LOG(INFO) << "rtk_y_print: " << "na: " << na << " nb: " << nb << " ny: " << ny << ", " << rtk_y_print.transpose();
     matmul("TN",ny,nx,nx,1.0,D ,rtk->P,0.0,DP);
     matmul("NN",ny,ny,nx,1.0,DP,D     ,0.0,Qy);
     
@@ -1616,7 +1638,7 @@ static int relpos(rtk_t *rtk, const obsd_t *obs, int nu, int nr,
     LOG(INFO) <<"number of common satellite-> "<<ns;
     double epoch_time[100];
     time2epoch(obs[nu].time, epoch_time);
-    std::cout << "epoch_time-> "<< epoch_time[0]<<"/"<<epoch_time[1]<<"/"<<epoch_time[2]<< " "<<epoch_time[3]<<":"<<epoch_time[4]<<":"<<epoch_time[5]<<std::endl;
+    LOG(INFO) << "epoch_time-> "<< epoch_time[0]<<"/"<<epoch_time[1]<<"/"<<epoch_time[2]<< " "<<epoch_time[3]<<":"<<epoch_time[4]<<":"<<epoch_time[5];
     
     #if 0
     nlosExclusion::GNSS_Raw_Array gnss_data; // station data to be published
@@ -1677,6 +1699,17 @@ static int relpos(rtk_t *rtk, const obsd_t *obs, int nu, int nr,
      */
     udstate(rtk,obs,sat,iu,ir,ns,nav);
     // rtk->ssat[sat-1].slip[f]
+
+    Eigen::Map<Eigen::MatrixXd> rtk_x_print4(rtk->x, rtk->nx, 1);
+    std::cout << "rtk_x, debug: ";
+    std::stringstream ss4;
+    for (int pi = 0; pi < rtk->nx; pi ++) {
+        if (rtk_x_print4(pi) != 0) {
+            std::cout << "(" << pi << ", " << rtk_x_print4(pi) << ")";
+            ss4 << pi << ",";
+        }
+    }
+    std::cout << std::endl << "rtk_x_sat_id: " << ss4.str() << std::endl;
 
     #if 1
     nlosExclusion::GNSS_Raw_Array gnss_data; // station data to be published
@@ -1834,14 +1867,12 @@ static int relpos(rtk_t *rtk, const obsd_t *obs, int nu, int nr,
 
     /* resolve integer ambiguity by WL-NL */
     if (stat!=SOLQ_NONE&&rtk->opt.modear==ARMODE_WLNL) {
-        
         if (resamb_WLNL(rtk,obs,sat,iu,ir,ns,nav,azel)) {
             stat=SOLQ_FIX;
         }
     }
     /* resolve integer ambiguity by TCAR */
     else if (stat!=SOLQ_NONE&&rtk->opt.modear==ARMODE_TCAR) {
-        
         if (resamb_TCAR(rtk,obs,sat,iu,ir,ns,nav,azel)) {
             stat=SOLQ_FIX;
         }
@@ -1849,7 +1880,6 @@ static int relpos(rtk_t *rtk, const obsd_t *obs, int nu, int nr,
     /* resolve integer ambiguity by LAMBDA */
     else if (stat!=SOLQ_NONE&&resamb_LAMBDA(rtk,bias,xa)>1) {
         // LOG(INFO) <<"solve RTK ambiguity using LAMBDA ";
-        
         if (zdres(0,obs,nu,rs,dts,svh,nav,xa,opt,0,y,e,azel)) {
             
             /* post-fit reisiduals for fixed solution */

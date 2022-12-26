@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 /* constants -----------------------------------------------------------------*/
-
+#define RTK_FGO 1
 #define VER_RTKLIB  "2.4.2"             /* library version */
 
 #define PATCH_LEVEL "p13"               /* patch level */
